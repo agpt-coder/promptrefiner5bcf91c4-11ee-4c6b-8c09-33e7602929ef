@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "promptrefiner"
+version = "0.1.0"
+description = "To develop the specified API endpoint that refines string LLM prompts with GPT4, we will leverage the outlined tech stack: Python, FastAPI for creating the API, PostgreSQL as our database, and Prisma for object relational mapping. The API will expose a single endpoint which accepts string inputs, representing the LLM prompts that need refining. The core functionality involves using the OpenAI Python package to communicate with the GPT4 model, sending the user's prompt for refinement based on advanced prompt engineering techniques discussed earlier, such as iterative refinement, prompt chaining, and personalized construction."
+authors = ["AutoGPT <info@agpt.co>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.11"
+fastapi = "*"
+openai = "*"
+prisma = "*"
+pydantic = "*"
+uvicorn = "*"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

@@ -1,0 +1,87 @@
+// datasource db defines the database connection settings.
+// It is configured for PostgreSQL and uses an environment variable for the connection URL.
+// The 'extensions' feature enables the use of PostgreSQL-specific data types.
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+}
+
+// generator db configures Prisma Client settings.
+// It is set up to use Prisma Client Python with asyncio interface and specific features.
+generator db {
+  provider             = "prisma-client-py"
+  interface            = "asyncio"
+  recursive_type_depth = 5
+  previewFeatures      = ["postgresqlExtensions"]
+}
+
+model User {
+  id        String     @id @default(dbgenerated("gen_random_uuid()"))
+  email     String     @unique
+  password  String
+  role      Role       @default(USER)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  Prompts   Prompt[]
+  Feedbacks Feedback[]
+}
+
+model Prompt {
+  id              String   @id @default(dbgenerated("gen_random_uuid()"))
+  originalPrompt  String
+  refinedPrompt   String?
+  refinementScore Int?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  userId          String
+  User            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  Feedbacks Feedback[]
+}
+
+model Feedback {
+  id        String   @id @default(dbgenerated("gen_random_uuid()"))
+  score     Int?
+  comment   String?
+  createdAt DateTime @default(now())
+  promptId  String
+  userId    String
+  Prompt    Prompt   @relation(fields: [promptId], references: [id], onDelete: Cascade)
+  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model APIKey {
+  id          String   @id @default(dbgenerated("gen_random_uuid()"))
+  apiKey      String   @unique
+  createdAt   DateTime @default(now())
+  description String?
+}
+
+model Log {
+  id        String   @id @default(dbgenerated("gen_random_uuid()"))
+  message   String
+  level     LogLevel
+  createdAt DateTime @default(now())
+}
+
+model Config {
+  id          String   @id @default(dbgenerated("gen_random_uuid()"))
+  key         String   @unique
+  value       String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+enum Role {
+  ADMIN
+  USER
+  SUBSCRIBER
+}
+
+enum LogLevel {
+  INFO
+  WARNING
+  ERROR
+}
+
